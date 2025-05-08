@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Image metadata service using S3 events and API Gateway
+
+Globals:
+  Function:
+    Runtime: python3.11
+    Timeout: 10
+    MemorySize: 128
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref MetadataTable
+
+Resources:
+  UploadBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+
+  MetadataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+    DeletionPolicy: Delete
+
+  UploadProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/upload_processor.handler
+      Events:
+        S3Put:
+          Type: S3
+          Properties:
+            Bucket: !Ref UploadBucket
+            Events: s3:ObjectCreated:*
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref UploadBucket
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MetadataTable
+
+  GetMetadata:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get_metadata.handler
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /images/{key}
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref MetadataTable
+
+Outputs:
+  ImageApiUrl:
+    Description: "API endpoint"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/images/"

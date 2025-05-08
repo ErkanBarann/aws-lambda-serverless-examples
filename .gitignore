@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+.Python
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+# SAM build artifacts
+.aws-sam/
+# VS Code
+.vscode/
