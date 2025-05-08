@@ -1,9 +1,10 @@
 name: CI/CD
 
 on:
-  push:
-    branches: [main]
-  pull_request:
+  #push:
+  #  branches: [main]
+  #pull_request:
+    workflow_dispatch:  # We use workflow_dispatch so the pipeline runs only when manually triggered, preventing automatic builds in this portfolio repo.
 
 jobs:
   build-test-deploy:
