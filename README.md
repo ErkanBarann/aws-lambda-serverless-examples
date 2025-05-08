@@ -118,4 +118,4 @@ This architecture stays within the AWS Free Tier for modest testing
 
 ## License
 
-MIT © 2025 Your Name
+MIT © 2025 Erkan Baran
